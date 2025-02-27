@@ -3,6 +3,21 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { headers } from 'next/headers';
 
+// Function to ensure directory exists
+async function ensureDirectoryExists(dirPath: string) {
+  try {
+    await fs.access(dirPath);
+  } catch {
+    // Directory doesn't exist, create it
+    try {
+      await fs.mkdir(dirPath, { recursive: true });
+    } catch (error) {
+      console.error('Error creating directory:', error);
+      throw new Error(`Failed to create directory: ${dirPath}`);
+    }
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
@@ -28,31 +43,42 @@ export async function POST(request: Request) {
     const userAgent = headersList.get('user-agent') || 'Unknown';
     const ip = headersList.get('x-forwarded-for') || 'Unknown';
 
-    // Create data directory if it doesn't exist
-    const dataDir = path.join(process.cwd(), 'data');
-    await fs.mkdir(dataDir, { recursive: true });
+    // Create base data directory
+    const baseDir = path.join(process.cwd(), 'data');
+    await ensureDirectoryExists(baseDir);
 
-    // Append to CSV file
-    const csvPath = path.join(dataDir, 'waitlist.csv');
+    const csvPath = path.join(baseDir, 'waitlist.csv');
     const csvLine = `"${timestamp}","${email}","${ip}","${userAgent}"\n`;
 
-    // Create file with headers if it doesn't exist
+    // Create or append to CSV file
     try {
-      await fs.access(csvPath);
-    } catch {
-      await fs.writeFile(csvPath, '"Timestamp","Email","IP","UserAgent"\n');
+      let fileExists = true;
+      try {
+        await fs.access(csvPath);
+      } catch {
+        fileExists = false;
+      }
+
+      if (!fileExists) {
+        // Create new file with headers
+        await fs.writeFile(csvPath, '"Timestamp","Email","IP","UserAgent"\n');
+      }
+
+      // Append new entry
+      await fs.appendFile(csvPath, csvLine);
+
+      return NextResponse.json(
+        { message: 'Successfully joined waitlist!' },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error('Error writing to file:', error);
+      throw new Error(`Failed to write to CSV file: ${error.message}`);
     }
-
-    await fs.appendFile(csvPath, csvLine);
-
-    return NextResponse.json(
-      { message: 'Successfully joined waitlist!' },
-      { status: 200 }
-    );
   } catch (error) {
     console.error('Error saving email:', error);
     return NextResponse.json(
-      { error: 'Failed to save email' },
+      { error: error instanceof Error ? error.message : 'Failed to save email' },
       { status: 500 }
     );
   }

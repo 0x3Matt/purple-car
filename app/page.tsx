@@ -43,15 +43,30 @@ export default function Home() {
 
   return (
     <main className="hero-background">
-      {/* Floating Icons */}
-      <div className="floating-icon" style={{ top: '10%', left: '10%' }}>
-        <FaTwitter size={30} color="white" />
+      {/* Floating Cars */}
+      <div className="floating-icon" style={{ top: '15%', left: '10%', animationDelay: '0s' }}>
+        <FaCar size={35} color="white" />
       </div>
-      <div className="floating-icon" style={{ top: '20%', right: '15%' }}>
-        <FaGithub size={30} color="white" />
+      <div className="floating-icon" style={{ top: '25%', right: '15%', animationDelay: '2s' }}>
+        <FaCar size={28} color="white" />
       </div>
-      <div className="floating-icon" style={{ bottom: '15%', left: '20%' }}>
-        <FaLinkedinIn size={30} color="white" />
+      <div className="floating-icon" style={{ bottom: '20%', left: '20%', animationDelay: '4s' }}>
+        <FaCar size={42} color="white" />
+      </div>
+      <div className="floating-icon" style={{ bottom: '35%', right: '10%', animationDelay: '6s' }}>
+        <FaCar size={32} color="white" />
+      </div>
+      <div className="floating-icon" style={{ top: '45%', left: '15%', animationDelay: '3s' }}>
+        <FaCar size={25} color="white" />
+      </div>
+      <div className="floating-icon" style={{ top: '60%', right: '20%', animationDelay: '5s' }}>
+        <FaCar size={38} color="white" />
+      </div>
+      <div className="floating-icon" style={{ bottom: '50%', left: '5%', animationDelay: '7s' }}>
+        <FaCar size={30} color="white" />
+      </div>
+      <div className="floating-icon" style={{ top: '10%', right: '25%', animationDelay: '1s' }}>
+        <FaCar size={28} color="white" />
       </div>
 
       {/* Main Content */}
