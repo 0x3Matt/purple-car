@@ -2,16 +2,43 @@
 
 import { useState } from 'react'
 import { FaTwitter, FaGithub, FaLinkedinIn, FaFacebook, FaInstagram, FaCar } from 'react-icons/fa'
+import { toast } from 'sonner'
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [email, setEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle email submission here
-    console.log('Email submitted:', email)
-    setEmail('')
+    
+    if (isSubmitting) return
+    
+    try {
+      setIsSubmitting(true)
+      
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to join waitlist')
+      }
+
+      toast.success('Successfully joined the waitlist!')
+      setEmail('')
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to join waitlist')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -53,9 +80,14 @@ export default function Home() {
             placeholder="Enter your email"
             className="waitlist-input"
             required
+            disabled={isSubmitting}
           />
-          <button type="submit" className="waitlist-button">
-            Notify Me
+          <button 
+            type="submit" 
+            className="waitlist-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Notify Me'}
           </button>
         </form>
 
@@ -88,21 +120,22 @@ export default function Home() {
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <div className="space-y-4">
               <p>
-                <strong>Email:</strong> contact@purplecar.co.uk
+                <strong>Email:</strong>{' '}
+                <a href="mailto:contact@purplecar.co.uk" className="hover:text-purple-400">
+                  contact@purplecar.co.uk
+                </a>
               </p>
               <p>
-                <strong>Phone:</strong> +44 7362 300523
+                <strong>Phone:</strong>{' '}
+                <a href="tel:+447362300523" className="hover:text-purple-400">
+                  +44 7362 300523
+                </a>
               </p>
               <p>
                 <strong>Address:</strong><br />
                 123 Innovation Drive<br />
                 Tech Valley, CA 94025
               </p>
-              <div className="flex space-x-4 mt-6">
-                <a href="#" className="hover:text-purple-400"><FaTwitter size={24} /></a>
-                <a href="#" className="hover:text-purple-400"><FaLinkedinIn size={24} /></a>
-                <a href="#" className="hover:text-purple-400"><FaGithub size={24} /></a>
-              </div>
             </div>
             <button
               onClick={() => setShowModal(false)}
