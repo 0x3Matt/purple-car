@@ -31,13 +31,13 @@ export default function Home() {
       <div className="text-center text-white relative z-10 space-y-8">
         <div className="logo-container justify-center">
           <FaCar className="logo" />
-          <h1 className="text-6xl font-bold">Purple Car</h1>
+          <h1 className="text-4xl font-bold">Purple Car</h1>
         </div>
         
-        <h2 className="text-4xl font-semibold mb-4">
+        <h2 className="text-5xl font-semibold mb-4">
           Buying or Selling a car?
           <br />
-          <span className="text-3xl">Skip the Hassle</span>
+          <span className="text-4xl">Skip the Hassle</span>
         </h2>
         
         <p className="text-xl mb-8 max-w-2xl mx-auto">
@@ -91,7 +91,7 @@ export default function Home() {
                 <strong>Email:</strong> contact@purplecar.co.uk
               </p>
               <p>
-                <strong>Phone:</strong> +254 700 370101
+                <strong>Phone:</strong> +44 7362 300523
               </p>
               <p>
                 <strong>Address:</strong><br />
@@ -113,6 +113,11 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <div className="footer-text">
+        © 2025 Purple Car. All rights reserved.
+      </div>
     </main>
   )
 }
