@@ -1,4 +1,5 @@
-import { ImageResponse } from 'next/og'
+import { ImageResponse } from '@vercel/og'
+import { FaCar } from 'react-icons/fa'
 
 export const runtime = 'edge'
 
@@ -10,41 +11,42 @@ export const size = {
 
 export const contentType = 'image/png'
 
-export default async function Image() {
+export default function Image() {
   return new ImageResponse(
     (
       <div
         style={{
-          background: 'linear-gradient(135deg, #6F19BE 0%, #9F33E8 30%, #BE55FF 60%, #945DC4 100%)',
+          background: 'linear-gradient(to right, #4c1d95, #7e22ce)',
           width: '100%',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '48px',
+          padding: '40px',
+          gap: '20px',
+          fontFamily: 'system-ui',
         }}
       >
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '24px',
+            gap: '16px',
           }}
         >
           <svg
-            width="120"
-            height="120"
+            width="64"
+            height="64"
             viewBox="0 0 24 24"
             fill="white"
-            style={{ marginRight: '16px' }}
+            style={{ marginRight: '12px' }}
           >
-            <path d="M16 6l3 4h2c.5 0 1 .5 1 1v3c0 .5-.5 1-1 1h-1c0 1.66-1.34 3-3 3s-3-1.34-3-3h-4c0 1.66-1.34 3-3 3s-3-1.34-3-3H3c-.5 0-1-.5-1-1V9c0-.5.5-1 1-1h11l2-2h-3V4h5v2zM6.5 15c.83 0 1.5-.67 1.5-1.5S7.33 12 6.5 12 5 12.67 5 13.5 5.67 15 6.5 15zm11 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
+            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-5h14v5z"/>
           </svg>
           <div
             style={{
-              fontSize: '64px',
+              fontSize: '48px',
               fontWeight: 'bold',
               color: 'white',
             }}
@@ -54,10 +56,10 @@ export default async function Image() {
         </div>
         <div
           style={{
-            fontSize: '36px',
+            fontSize: '32px',
             color: 'white',
             textAlign: 'center',
-            marginTop: '24px',
+            marginTop: '20px',
           }}
         >
           Skip the Hassle of Buying & Selling Cars

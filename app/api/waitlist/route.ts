@@ -57,6 +57,29 @@ function parseUserAgent(userAgent: string): string {
   }
 }
 
+// Function to check if email exists in CSV
+async function checkEmailExists(csvPath: string, email: string): Promise<boolean> {
+  try {
+    const fileExists = await fs.access(csvPath).then(() => true).catch(() => false);
+    if (!fileExists) return false;
+
+    const content = await fs.readFile(csvPath, 'utf-8');
+    const lines = content.split('\n');
+    // Skip header and check each line
+    return lines.slice(1).some(line => {
+      const columns = line.split(',');
+      if (columns.length >= 2) {
+        const csvEmail = columns[1].replace(/"/g, ''); // Remove quotes
+        return csvEmail.toLowerCase() === email.toLowerCase();
+      }
+      return false;
+    });
+  } catch (error) {
+    console.error('Error checking email existence:', error);
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     // Validate content type
@@ -83,8 +106,22 @@ export async function POST(request: Request) {
     // Validate email format
     if (!isValidEmail(email)) {
       return NextResponse.json(
-        { error: 'Invalid email format' },
+        { error: 'Invalid email format', type: 'error' },
         { status: 400 }
+      );
+    }
+
+    // Create base data directory and ensure it exists
+    const baseDir = path.join(process.cwd(), 'data');
+    await ensureDirectoryExists(baseDir);
+    const csvPath = path.join(baseDir, 'waitlist.csv');
+
+    // Check if email already exists
+    const emailExists = await checkEmailExists(csvPath, email);
+    if (emailExists) {
+      return NextResponse.json(
+        { error: 'This email is already on our waitlist!', type: 'info' },
+        { status: 409 }
       );
     }
 
@@ -96,11 +133,6 @@ export async function POST(request: Request) {
     // Get location data from IP
     const ipLocation = await getLocationFromIP(ip);
 
-    // Create base data directory
-    const baseDir = path.join(process.cwd(), 'data');
-    await ensureDirectoryExists(baseDir);
-
-    const csvPath = path.join(baseDir, 'waitlist.csv');
     // Escape special characters in CSV
     const escapedEmail = email.replace(/"/g, '""');
     
@@ -132,7 +164,7 @@ export async function POST(request: Request) {
       await fs.appendFile(csvPath, csvLine);
 
       return NextResponse.json(
-        { message: 'Successfully joined waitlist!' },
+        { message: 'Successfully joined waitlist!', type: 'success' },
         { status: 200 }
       );
     } catch (error) {
@@ -145,7 +177,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error processing request:', error);
     return NextResponse.json(
-      { error: 'Invalid request format' },
+      { error: 'Invalid request format', type: 'error' },
       { status: 400 }
     );
   }

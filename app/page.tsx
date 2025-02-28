@@ -3,19 +3,21 @@
 import { useState } from 'react'
 import { FaTwitter, FaGithub, FaLinkedinIn, FaFacebook, FaInstagram, FaCar } from 'react-icons/fa'
 import { toast } from 'sonner'
+import Toast from './components/Toast'
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [email, setEmail] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (isSubmitting) return
+    if (isLoading) return
     
     try {
-      setIsSubmitting(true)
+      setIsLoading(true)
       
       const response = await fetch('/api/waitlist', {
         method: 'POST',
@@ -29,17 +31,19 @@ export default function Home() {
 
       const data = await response.json()
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to join waitlist')
+      if (response.ok) {
+        setToast({ message: data.message, type: 'success' })
+        setEmail('')
+      } else {
+        setToast({ message: data.error, type: data.type || 'error' })
       }
-
-      toast.success('Successfully joined the waitlist!')
-      setEmail('')
     } catch (error) {
-      console.error('Error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to join waitlist')
+      setToast({ 
+        message: 'Something went wrong. Please try again.',
+        type: 'error'
+      })
     } finally {
-      setIsSubmitting(false)
+      setIsLoading(false)
     }
   }
 
@@ -89,23 +93,26 @@ export default function Home() {
         </p>
 
         {/* Waitlist Form */}
-        <form onSubmit={handleSubmit} className="waitlist-form">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="waitlist-input"
-            required
-            disabled={isSubmitting}
-          />
-          <button 
-            type="submit" 
-            className="waitlist-button"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Notify Me'}
-          </button>
+        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
+          <div className="flex gap-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
+              required
+            />
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {isLoading ? 'Joining...' : 'Join Waitlist'}
+            </button>
+          </div>
         </form>
 
         {/* Social Icons */}
@@ -162,6 +169,15 @@ export default function Home() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
       {/* Footer */}

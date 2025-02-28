@@ -3,11 +3,15 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Enable static optimization where possible
-  swcMinify: true,
-  // Ensure proper handling of API routes
+  // Configure server actions properly
   experimental: {
-    serverActions: true
+    serverActions: {
+      enabled: true
+    }
+  },
+  // Configure image domains for OpenGraph images
+  images: {
+    domains: ['fonts.gstatic.com'],
   }
 };
 
