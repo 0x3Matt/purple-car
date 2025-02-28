@@ -83,19 +83,7 @@
 
 /* Hero Background Styles */
 .hero-background {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  background-image: url('/images/purple-car-bg.jpg');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: #000;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @apply min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 to-purple-800 p-4 sm:p-8 relative overflow-hidden;
 }
 
 .hero-background::before {
@@ -117,10 +105,7 @@
 
 /* Floating Icons Animation */
 .floating-icon {
-  position: absolute;
-  opacity: 0.12;
-  filter: blur(1px);
-  transform-origin: center;
+  @apply fixed transform -translate-x-1/2 -translate-y-1/2 opacity-20 animate-float;
 }
 
 .floating-icon:nth-child(odd) {
@@ -163,81 +148,58 @@
 
 /* Modal Styles */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
+  @apply fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-0;
 }
 
 .modal-content {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-  color: white;
+  @apply bg-gradient-to-br from-purple-900/90 to-purple-800/90 backdrop-blur rounded-2xl relative text-white;
 }
 
 /* Waitlist Form Styles */
 .waitlist-form {
-  @apply flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto px-4;
+  @apply flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-sm sm:max-w-md mx-auto w-full;
 }
 
 .waitlist-input {
-  @apply w-full sm:w-96 px-6 py-3 text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-full text-white placeholder-white/70 focus:outline-none focus:border-white/40 transition-colors;
+  @apply w-full sm:flex-1 px-4 py-2.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:border-purple-500 backdrop-blur;
 }
 
 .waitlist-button {
-  @apply px-8 py-3 text-lg font-medium bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap;
+  @apply w-full sm:w-auto px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-purple-400 text-white font-medium hover:from-purple-500 hover:to-purple-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 min-w-[120px];
 }
 
 /* Social Icons */
 .social-icons {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  margin-top: 2rem;
+  @apply flex justify-center items-center gap-4 sm:gap-6;
 }
 
 .social-icon {
-  color: white;
-  opacity: 0.8;
-  transition: all 0.2s ease;
-}
-
-.social-icon:hover {
-  opacity: 1;
-  transform: translateY(-2px);
+  @apply text-white/60 hover:text-white transition-colors;
 }
 
 /* Logo styles */
 .logo-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  @apply flex items-center justify-center gap-3 sm:gap-4;
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
-  color: white;
+  @apply text-4xl sm:text-5xl;
 }
 
 /* Footer styles */
 .footer-text {
-  position: absolute;
-  bottom: 1.5rem;
-  text-align: center;
-  color: white;
-  opacity: 0.8;
-  font-size: 0.875rem;
+  @apply absolute bottom-4 text-white/60;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% - 20px));
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
