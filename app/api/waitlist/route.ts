@@ -28,6 +28,25 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
+// Function to get location data from IP
+async function getLocationFromIP(ip: string) {
+  try {
+    const response = await fetch(`http://ip-api.com/json/${ip}`);
+    const data = await response.json();
+    if (data.status === 'success') {
+      return {
+        country: data.country || 'Unknown',
+        region: data.regionName || 'Unknown',
+        city: data.city || 'Unknown'
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching location:', error);
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     // Validate content type
@@ -62,7 +81,10 @@ export async function POST(request: Request) {
     const timestamp = new Date().toISOString();
     const headersList = headers();
     const userAgent = headersList.get('user-agent') || 'Unknown';
-    const ip = headersList.get('x-forwarded-for') || 'Unknown';
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
+
+    // Get location data from IP
+    const ipLocation = await getLocationFromIP(ip);
 
     // Create base data directory
     const baseDir = path.join(process.cwd(), 'data');
@@ -71,7 +93,13 @@ export async function POST(request: Request) {
     const csvPath = path.join(baseDir, 'waitlist.csv');
     // Escape special characters in CSV
     const escapedEmail = email.replace(/"/g, '""');
-    const csvLine = `"${timestamp}","${escapedEmail}","${ip}","${userAgent}"\n`;
+    
+    // Create CSV line with location data
+    const locationData = ipLocation ? 
+      `"${ipLocation.country}","${ipLocation.region}","${ipLocation.city}"` :
+      '"Unknown","Unknown","Unknown"';
+
+    const csvLine = `"${timestamp}","${escapedEmail}","${ip}","${userAgent}",${locationData}\n`;
 
     // Create or append to CSV file
     try {
@@ -83,8 +111,10 @@ export async function POST(request: Request) {
       }
 
       if (!fileExists) {
-        // Create new file with headers
-        await fs.writeFile(csvPath, '"Timestamp","Email","IP","UserAgent"\n');
+        // Create new file with headers including location columns
+        await fs.writeFile(csvPath, 
+          '"Timestamp","Email","IP","UserAgent","Country","Region","City"\n'
+        );
       }
 
       // Append new entry
