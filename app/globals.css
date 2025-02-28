@@ -179,28 +179,11 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   padding: 2rem;
-  border-radius: 9999px;
+  border-radius: 1rem;
   max-width: 500px;
   width: 90%;
   position: relative;
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Add rounded style for close button */
-.modal-content button {
-  border-radius: 9999px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  transition: all 0.2s ease;
-}
-
-.modal-content button:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Waitlist Form Styles */

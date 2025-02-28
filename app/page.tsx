@@ -70,7 +70,7 @@ export default function Home() {
       </div>
       <div className="floating-icon" style={{ bottom: '50%', left: '5%', animationDelay: '7s' }}>
         <FaCar size={30} color="white" />
-      </div>
+          </div>
       <div className="floating-icon" style={{ top: '10%', right: '25%', animationDelay: '1s' }}>
         <FaCar size={28} color="white" />
       </div>
@@ -95,23 +95,23 @@ export default function Home() {
         {/* Waitlist Form */}
         <form onSubmit={handleSubmit} className="waitlist-form">
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             className="waitlist-input"
             required
             disabled={isLoading}
           />
           <button
-            type="submit"
+            type="submit" 
             className="waitlist-button"
             disabled={isLoading}
           >
             {isLoading ? 'Joining...' : 'Notify Me'}
           </button>
         </form>
-
+        
         {/* Social Icons */}
         <div className="social-icons">
           <a href="#" className="social-icon">
@@ -124,7 +124,7 @@ export default function Home() {
             <FaTwitter size={28} />
           </a>
         </div>
-
+        
         {/* Contact Button */}
         <button
           onClick={() => setShowModal(true)}
@@ -133,42 +133,39 @@ export default function Home() {
           Contact Us
         </button>
       </div>
-
+      
       {/* Contact Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="px-4 py-2">
-              <h2 className="text-2xl font-bold mb-6 text-center">Contact Us</h2>
-              <div className="space-y-6">
-                <p className="flex items-center justify-center gap-2">
-                  <strong>Email:</strong>
-                  <a href="mailto:contact@purplecar.co.uk" className="hover:text-purple-400 transition-colors">
-                    contact@purplecar.co.uk
-                  </a>
-                </p>
-                <p className="flex items-center justify-center gap-2">
-                  <strong>Phone:</strong>
-                  <a href="tel:+447362300523" className="hover:text-purple-400 transition-colors">
-                    +44 7362 300523
-                  </a>
-                </p>
-                <p className="text-center">
-                  <strong>Address:</strong><br />
-                  123 Innovation Drive<br />
-                  Tech Valley, CA 94025
-                </p>
-              </div>
+            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
+            <div className="space-y-4">
+              <p>
+                <strong>Email:</strong>{' '}
+                <a href="mailto:contact@purplecar.co.uk" className="hover:text-purple-400">
+                  contact@purplecar.co.uk
+                </a>
+              </p>
+              <p>
+                <strong>Phone:</strong>{' '}
+                <a href="tel:+447362300523" className="hover:text-purple-400">
+                  +44 7362 300523
+                </a>
+              </p>
+              <p>
+                <strong>Address:</strong><br />
+                123 Innovation Drive<br />
+                Tech Valley, CA 94025
+              </p>
             </div>
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4"
-              aria-label="Close modal"
+              className="absolute top-4 right-4 text-white/60 hover:text-white"
             >
               ✕
             </button>
           </div>
-        </div>
+          </div>
       )}
 
       {/* Toast Notifications */}
