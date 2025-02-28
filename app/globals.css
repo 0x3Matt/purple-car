@@ -179,52 +179,41 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 9999px;
   max-width: 500px;
   width: 90%;
   position: relative;
   color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Form Styles */
-.waitlist-form {
+/* Add rounded style for close button */
+.modal-content button {
+  border-radius: 9999px;
+  width: 32px;
+  height: 32px;
   display: flex;
-  gap: 1rem;
-  max-width: 600px;
-  width: 90%;
-  margin: 2rem auto;
-  position: relative;
-  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.modal-content button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Waitlist Form Styles */
+.waitlist-form {
+  @apply flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto px-4;
 }
 
 .waitlist-input {
-  flex: 1;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 1.1rem;
-}
-
-.waitlist-input::placeholder {
-  color: rgba(255, 255, 255, 0.8);
+  @apply w-full sm:w-96 px-6 py-3 text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-full text-white placeholder-white/70 focus:outline-none focus:border-white/40 transition-colors;
 }
 
 .waitlist-button {
-  padding: 1rem 2rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, #9333EA, #7928CA);
-  color: white;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.waitlist-button:hover {
-  transform: translateY(-2px);
+  @apply px-8 py-3 text-lg font-medium bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap;
 }
 
 /* Social Icons */

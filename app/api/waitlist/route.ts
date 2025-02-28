@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     const contentType = request.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       return NextResponse.json(
-        { error: 'Content-Type must be application/json' },
+        { error: 'Content-Type must be application/json', type: 'error' },
         { status: 400 }
       );
     }
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     // Type check the email field
     if (!body || typeof body.email !== 'string') {
       return NextResponse.json(
-        { error: 'Email is required and must be a string' },
+        { error: 'Email is required and must be a string', type: 'error' },
         { status: 400 }
       );
     }
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
     }
 
     const timestamp = new Date().toISOString();
-    const headersList = headers();
+    const headersList = await headers();
     const userAgent = parseUserAgent(headersList.get('user-agent') || 'Unknown');
     const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
 
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
     } catch (error) {
       console.error('Error writing to file:', error);
       return NextResponse.json(
-        { error: 'Failed to save email to waitlist' },
+        { error: 'Failed to save email to waitlist', type: 'error' },
         { status: 500 }
       );
     }

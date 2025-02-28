@@ -93,26 +93,23 @@ export default function Home() {
         </p>
 
         {/* Waitlist Form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
-          <div className="flex gap-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-500"
-              required
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {isLoading ? 'Joining...' : 'Join Waitlist'}
-            </button>
-          </div>
+        <form onSubmit={handleSubmit} className="waitlist-form">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="waitlist-input"
+            required
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            className="waitlist-button"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Joining...' : 'Notify Me'}
+          </button>
         </form>
 
         {/* Social Icons */}
@@ -131,7 +128,7 @@ export default function Home() {
         {/* Contact Button */}
         <button
           onClick={() => setShowModal(true)}
-          className="mt-8 px-8 py-3 bg-white/10 backdrop-blur rounded-lg hover:bg-white/20 transition-colors"
+          className="mt-8 px-8 py-3 bg-white/10 backdrop-blur rounded-full hover:bg-white/20 transition-colors"
         >
           Contact Us
         </button>
@@ -141,29 +138,32 @@ export default function Home() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-            <div className="space-y-4">
-              <p>
-                <strong>Email:</strong>{' '}
-                <a href="mailto:contact@purplecar.co.uk" className="hover:text-purple-400">
-                  contact@purplecar.co.uk
-                </a>
-              </p>
-              <p>
-                <strong>Phone:</strong>{' '}
-                <a href="tel:+447362300523" className="hover:text-purple-400">
-                  +44 7362 300523
-                </a>
-              </p>
-              <p>
-                <strong>Address:</strong><br />
-                123 Innovation Drive<br />
-                Tech Valley, CA 94025
-              </p>
+            <div className="px-4 py-2">
+              <h2 className="text-2xl font-bold mb-6 text-center">Contact Us</h2>
+              <div className="space-y-6">
+                <p className="flex items-center justify-center gap-2">
+                  <strong>Email:</strong>
+                  <a href="mailto:contact@purplecar.co.uk" className="hover:text-purple-400 transition-colors">
+                    contact@purplecar.co.uk
+                  </a>
+                </p>
+                <p className="flex items-center justify-center gap-2">
+                  <strong>Phone:</strong>
+                  <a href="tel:+447362300523" className="hover:text-purple-400 transition-colors">
+                    +44 7362 300523
+                  </a>
+                </p>
+                <p className="text-center">
+                  <strong>Address:</strong><br />
+                  123 Innovation Drive<br />
+                  Tech Valley, CA 94025
+                </p>
+              </div>
             </div>
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-white/60 hover:text-white"
+              className="absolute top-4 right-4"
+              aria-label="Close modal"
             >
               ✕
             </button>
