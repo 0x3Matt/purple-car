@@ -78,8 +78,8 @@ export default function Home() {
       {/* Main Content */}
       <div className="text-center text-white relative z-10 space-y-6 sm:space-y-8 px-4 sm:px-0">
         <div className="logo-container justify-center">
-          <FaCar className="logo text-4xl sm:text-5xl" />
-          <h1 className="text-3xl sm:text-4xl font-bold">Purple Car</h1>
+          <FaCar className="logo text-2xl sm:text-3xl" />
+          <h1 className="text-2xl sm:text-3xl font-bold">Purple Car</h1>
         </div>
         
         <h2 className="text-3xl sm:text-5xl font-semibold mb-2 sm:mb-4">

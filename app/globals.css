@@ -179,11 +179,11 @@
 
 /* Logo styles */
 .logo-container {
-  @apply flex items-center justify-center gap-3 sm:gap-4;
+  @apply flex items-center justify-center gap-2 sm:gap-3;
 }
 
 .logo {
-  @apply text-4xl sm:text-5xl;
+  @apply text-2xl sm:text-3xl;
 }
 
 /* Footer styles */
