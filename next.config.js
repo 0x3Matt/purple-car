@@ -1,10 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { unoptimized: true },
+  // Enable static optimization where possible
+  swcMinify: true,
+  // Ensure proper handling of API routes
+  experimental: {
+    serverActions: true
+  }
 };
 
 module.exports = nextConfig;
