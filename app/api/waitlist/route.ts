@@ -47,6 +47,16 @@ async function getLocationFromIP(ip: string) {
   }
 }
 
+function parseUserAgent(userAgent: string): string {
+  try {
+    // Extract the main browser and OS info
+    const matches = userAgent.match(/(Chrome|Firefox|Safari|Edge|MSIE|Opera)\/[\d.]+|Windows NT [\d.]+|Mac OS X [\d._]+|Linux/g);
+    return matches ? matches[0] : userAgent.split(' ')[0];
+  } catch {
+    return 'Unknown';
+  }
+}
+
 export async function POST(request: Request) {
   try {
     // Validate content type
@@ -80,7 +90,7 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
     const headersList = headers();
-    const userAgent = headersList.get('user-agent') || 'Unknown';
+    const userAgent = parseUserAgent(headersList.get('user-agent') || 'Unknown');
     const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
 
     // Get location data from IP
@@ -99,7 +109,8 @@ export async function POST(request: Request) {
       `"${ipLocation.country}","${ipLocation.region}","${ipLocation.city}"` :
       '"Unknown","Unknown","Unknown"';
 
-    const csvLine = `"${timestamp}","${escapedEmail}","${ip}","${userAgent}",${locationData}\n`;
+    // Reorder columns: Timestamp, Email, Location info, IP, UserAgent
+    const csvLine = `"${timestamp}","${escapedEmail}",${locationData},"${ip}","${userAgent}"\n`;
 
     // Create or append to CSV file
     try {
@@ -111,9 +122,9 @@ export async function POST(request: Request) {
       }
 
       if (!fileExists) {
-        // Create new file with headers including location columns
+        // Headers in the same order as the data
         await fs.writeFile(csvPath, 
-          '"Timestamp","Email","IP","UserAgent","Country","Region","City"\n'
+          '"Timestamp","Email","Country","Region","City","IP","Browser"\n'
         );
       }
 
