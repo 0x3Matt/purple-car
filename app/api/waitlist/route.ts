@@ -3,6 +3,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { headers } from 'next/headers';
 
+// Add dynamic route configuration
+export const dynamic = 'force-dynamic';
+
 // Function to ensure directory exists
 async function ensureDirectoryExists(dirPath: string) {
   try {
@@ -13,25 +16,43 @@ async function ensureDirectoryExists(dirPath: string) {
       await fs.mkdir(dirPath, { recursive: true });
     } catch (error) {
       console.error('Error creating directory:', error);
-      throw new Error(`Failed to create directory: ${dirPath}`);
+      throw new Error('Failed to create directory');
     }
   }
 }
 
+// Improved email validation
+function isValidEmail(email: string): boolean {
+  // RFC 5322 compliant email regex
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(email);
+}
+
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
-    
-    if (!email) {
+    // Validate content type
+    const contentType = request.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { error: 'Content-Type must be application/json' },
         { status: 400 }
       );
     }
 
+    const body = await request.json();
+    
+    // Type check the email field
+    if (!body || typeof body.email !== 'string') {
+      return NextResponse.json(
+        { error: 'Email is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    const { email } = body;
+
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }
@@ -48,7 +69,9 @@ export async function POST(request: Request) {
     await ensureDirectoryExists(baseDir);
 
     const csvPath = path.join(baseDir, 'waitlist.csv');
-    const csvLine = `"${timestamp}","${email}","${ip}","${userAgent}"\n`;
+    // Escape special characters in CSV
+    const escapedEmail = email.replace(/"/g, '""');
+    const csvLine = `"${timestamp}","${escapedEmail}","${ip}","${userAgent}"\n`;
 
     // Create or append to CSV file
     try {
@@ -73,13 +96,16 @@ export async function POST(request: Request) {
       );
     } catch (error) {
       console.error('Error writing to file:', error);
-      throw new Error(`Failed to write to CSV file: ${error.message}`);
+      return NextResponse.json(
+        { error: 'Failed to save email to waitlist' },
+        { status: 500 }
+      );
     }
   } catch (error) {
-    console.error('Error saving email:', error);
+    console.error('Error processing request:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to save email' },
-      { status: 500 }
+      { error: 'Invalid request format' },
+      { status: 400 }
     );
   }
 } 
