@@ -6,9 +6,10 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Purple Car | Premium Car Marketplace in London',
-  description: 'Find and sell premium cars in London. Verified sellers, quality vehicles, and secure transactions.',
-  keywords: ['cars', 'premium cars', 'car marketplace', 'London cars', 'buy cars', 'sell cars'],
+  metadataBase: new URL('https://purplecar.co.uk'),
+  title: 'Purple Car | Skip the Hassle of Buying & Selling Cars',
+  description: 'Join our waitlist to be the first to experience the future of automotive excellence. Purple Car makes buying and selling cars hassle-free.',
+  keywords: ['car marketplace', 'buy car', 'sell car', 'automotive', 'used cars', 'new cars', 'car dealership'],
   authors: [{ name: 'Purple Car' }],
   creator: 'Purple Car',
   publisher: 'Purple Car',
@@ -18,35 +19,38 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon.png', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-icon.png', type: 'image/png' },
-    ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/safari-pinned-tab.svg',
-      },
-    ],
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+    other: {
+      rel: 'apple-touch-icon-precomposed',
+      url: '/apple-touch-icon-precomposed.png',
+    },
   },
   manifest: '/site.webmanifest',
   openGraph: {
     type: 'website',
     locale: 'en_GB',
     url: 'https://purplecar.co.uk',
-    title: 'Purple Car | Premium Car Marketplace in London',
-    description: 'Find and sell premium cars in London. Verified sellers, quality vehicles, and secure transactions.',
     siteName: 'Purple Car',
+    title: 'Purple Car | Skip the Hassle of Buying & Selling Cars',
+    description: 'Join our waitlist to be the first to experience the future of automotive excellence. Purple Car makes buying and selling cars hassle-free.',
+    images: [
+      {
+        url: '/images/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Purple Car - The Future of Car Buying and Selling',
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Purple Car | Premium Car Marketplace in London',
-    description: 'Find and sell premium cars in London. Verified sellers, quality vehicles, and secure transactions.',
+    title: 'Purple Car | Skip the Hassle of Buying & Selling Cars',
+    description: 'Join our waitlist to be the first to experience the future of automotive excellence. Purple Car makes buying and selling cars hassle-free.',
+    images: ['/images/og-image.png'],
     creator: '@purplecar',
-    images: ['/og-image.png'],
+    site: '@purplecar',
   },
   viewport: {
     width: 'device-width',
@@ -64,13 +68,16 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: 'your-google-site-verification',
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
