@@ -12,7 +12,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: '#4c1d95'
-}
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://purplecar.co.uk'),
@@ -69,11 +69,6 @@ export const metadata: Metadata = {
     images: ['/images/og-image.png'],
     creator: '@purplecar',
     site: '@purplecar',
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
   },
   robots: {
     index: true,

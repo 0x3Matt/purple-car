@@ -1,12 +1,33 @@
 {
   "name": "Purple Car",
   "short_name": "Purple Car",
-  "description": "Premium Car Marketplace in London",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#9333EA",
+  "description": "Skip the Hassle of Buying & Selling Cars",
   "icons": [
+    {
+      "src": "/icon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
@@ -17,5 +38,10 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "theme_color": "#4c1d95",
+  "background_color": "#4c1d95",
+  "display": "standalone",
+  "start_url": "/",
+  "orientation": "portrait"
 } 
