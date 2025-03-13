@@ -4,6 +4,7 @@ import { supabase } from '@/utils/supabase';
 
 // Add dynamic route configuration
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 // Improved email validation
 function isValidEmail(email: string): boolean {
@@ -12,10 +13,21 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-// Function to get location data from IP
+// Function to get location data from IP - made optional
 async function getLocationFromIP(ip: string) {
+  if (!ip || ip === 'Unknown') return null;
+  
   try {
-    const response = await fetch(`http://ip-api.com/json/${ip}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+    
+    const response = await fetch(`http://ip-api.com/json/${ip}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) return null;
+    
     const data = await response.json();
     if (data.status === 'success') {
       return {
@@ -32,6 +44,7 @@ async function getLocationFromIP(ip: string) {
 }
 
 function parseUserAgent(userAgent: string): string {
+  if (!userAgent) return 'Unknown';
   try {
     // Extract the main browser and OS info
     const matches = userAgent.match(/(Chrome|Firefox|Safari|Edge|MSIE|Opera)\/[\d.]+|Windows NT [\d.]+|Mac OS X [\d._]+|Linux/g);
@@ -43,12 +56,19 @@ function parseUserAgent(userAgent: string): string {
 
 // Function to check if email exists in Supabase
 async function checkEmailExists(email: string): Promise<boolean> {
+  if (!email) return false;
+  
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('waitlist')
       .select('email')
       .eq('email', email.toLowerCase())
       .single();
+    
+    if (error) {
+      console.error('Error checking email:', error);
+      return false;
+    }
     
     return !!data;
   } catch (error) {
@@ -98,16 +118,16 @@ export async function POST(request: Request) {
     }
 
     const timestamp = new Date().toISOString();
-    const headersList = await headers();
+    const headersList = headers();
     const userAgent = parseUserAgent(headersList.get('user-agent') || 'Unknown');
     const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
 
-    // Get location data from IP
+    // Get location data from IP (with timeout)
     const ipLocation = await getLocationFromIP(ip);
 
     // Save to Supabase
     try {
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('waitlist')
         .insert([
           {
@@ -121,7 +141,10 @@ export async function POST(request: Request) {
           }
         ]);
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        throw insertError;
+      }
 
       return NextResponse.json(
         { message: 'Successfully joined waitlist!', type: 'success' },

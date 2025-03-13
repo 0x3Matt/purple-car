@@ -96,7 +96,17 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <Toaster position="top-center" />
-        <Analytics />
+        {process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' && (
+          <Analytics
+            beforeSend={(event) => {
+              // Don't send analytics if the request was blocked
+              if (event.url?.includes('ERR_BLOCKED_BY_CLIENT')) {
+                return null;
+              }
+              return event;
+            }}
+          />
+        )}
       </body>
     </html>
   );

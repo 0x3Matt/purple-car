@@ -12,9 +12,16 @@ if (!supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
   },
   db: {
     schema: 'public'
+  },
+  global: {
+    headers: {
+      'x-client-info': `purple-car-waitlist@1.0.0`
+    }
   }
 }); 
