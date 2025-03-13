@@ -21,7 +21,7 @@ async function getLocationFromIP(ip: string) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
     
-    const response = await fetch(`http://ip-api.com/json/${ip}`, {
+    const response = await fetch(`https://ip-api.com/json/${ip}`, {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
@@ -119,8 +119,8 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
     const headersList = headers();
-    const userAgent = parseUserAgent(headersList.get('user-agent') || 'Unknown');
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
+    const userAgent = parseUserAgent(String(headersList.get('user-agent')) || 'Unknown');
+    const ip = String(headersList.get('x-forwarded-for'))?.split(',')[0] || 'Unknown';
 
     // Get location data from IP (with timeout)
     const ipLocation = await getLocationFromIP(ip);
