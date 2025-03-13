@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -100,6 +101,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <Toaster position="top-center" />
+        <Analytics />
       </body>
     </html>
   );
