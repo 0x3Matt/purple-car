@@ -119,8 +119,8 @@ export async function POST(request: Request) {
 
     const timestamp = new Date().toISOString();
     const headersList = headers();
-    const userAgent = parseUserAgent(String(headersList.get('user-agent')) || 'Unknown');
-    const ip = String(headersList.get('x-forwarded-for'))?.split(',')[0] || 'Unknown';
+    const userAgent = parseUserAgent(headersList.get('user-agent') as string || 'Unknown');
+    const ip = (headersList.get('x-forwarded-for') as string || 'Unknown').split(',')[0];
 
     // Get location data from IP (with timeout)
     const ipLocation = await getLocationFromIP(ip);
