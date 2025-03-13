@@ -82,16 +82,27 @@ export async function POST(request: Request) {
     // Validate content type
     const contentType = request.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
+      console.error('Invalid content type:', contentType);
       return NextResponse.json(
         { error: 'Content-Type must be application/json', type: 'error' },
         { status: 400 }
       );
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (e) {
+      console.error('Failed to parse request body:', e);
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body', type: 'error' },
+        { status: 400 }
+      );
+    }
     
     // Type check the email field
     if (!body || typeof body.email !== 'string') {
+      console.error('Invalid email in body:', body);
       return NextResponse.json(
         { error: 'Email is required and must be a string', type: 'error' },
         { status: 400 }
@@ -102,6 +113,7 @@ export async function POST(request: Request) {
 
     // Validate email format
     if (!isValidEmail(email)) {
+      console.error('Invalid email format:', email);
       return NextResponse.json(
         { error: 'Invalid email format', type: 'error' },
         { status: 400 }
@@ -111,6 +123,7 @@ export async function POST(request: Request) {
     // Check if email already exists
     const emailExists = await checkEmailExists(email);
     if (emailExists) {
+      console.log('Email already exists:', email);
       return NextResponse.json(
         { error: 'This email is already on our waitlist!', type: 'info' },
         { status: 409 }
@@ -118,15 +131,22 @@ export async function POST(request: Request) {
     }
 
     const timestamp = new Date().toISOString();
-    const headersList = headers();
-    const userAgent = parseUserAgent(headersList.get('user-agent') as string || 'Unknown');
-    const ip = (headersList.get('x-forwarded-for') as string || 'Unknown').split(',')[0];
+    console.log('Getting headers...');
+    const headersList = await headers();
+    console.log('Headers received');
+    
+    const userAgent = parseUserAgent(headersList.get('user-agent') || 'Unknown');
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0] || 'Unknown';
+    console.log('Parsed headers:', { userAgent, ip });
 
     // Get location data from IP (with timeout)
+    console.log('Getting location data...');
     const ipLocation = await getLocationFromIP(ip);
+    console.log('Location data:', ipLocation);
 
     // Save to Supabase
     try {
+      console.log('Saving to Supabase...');
       const { error: insertError } = await supabase
         .from('waitlist')
         .insert([
@@ -146,6 +166,7 @@ export async function POST(request: Request) {
         throw insertError;
       }
 
+      console.log('Successfully saved email:', email);
       return NextResponse.json(
         { message: 'Successfully joined waitlist!', type: 'success' },
         { status: 200 }
