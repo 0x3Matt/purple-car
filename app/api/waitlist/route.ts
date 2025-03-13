@@ -1,25 +1,9 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { headers } from 'next/headers';
+import { supabase } from '@/utils/supabase';
 
 // Add dynamic route configuration
 export const dynamic = 'force-dynamic';
-
-// Function to ensure directory exists
-async function ensureDirectoryExists(dirPath: string) {
-  try {
-    await fs.access(dirPath);
-  } catch {
-    // Directory doesn't exist, create it
-    try {
-      await fs.mkdir(dirPath, { recursive: true });
-    } catch (error) {
-      console.error('Error creating directory:', error);
-      throw new Error('Failed to create directory');
-    }
-  }
-}
 
 // Improved email validation
 function isValidEmail(email: string): boolean {
@@ -57,23 +41,16 @@ function parseUserAgent(userAgent: string): string {
   }
 }
 
-// Function to check if email exists in CSV
-async function checkEmailExists(csvPath: string, email: string): Promise<boolean> {
+// Function to check if email exists in Supabase
+async function checkEmailExists(email: string): Promise<boolean> {
   try {
-    const fileExists = await fs.access(csvPath).then(() => true).catch(() => false);
-    if (!fileExists) return false;
-
-    const content = await fs.readFile(csvPath, 'utf-8');
-    const lines = content.split('\n');
-    // Skip header and check each line
-    return lines.slice(1).some(line => {
-      const columns = line.split(',');
-      if (columns.length >= 2) {
-        const csvEmail = columns[1].replace(/"/g, ''); // Remove quotes
-        return csvEmail.toLowerCase() === email.toLowerCase();
-      }
-      return false;
-    });
+    const { data } = await supabase
+      .from('waitlist')
+      .select('email')
+      .eq('email', email.toLowerCase())
+      .single();
+    
+    return !!data;
   } catch (error) {
     console.error('Error checking email existence:', error);
     return false;
@@ -111,13 +88,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create base data directory and ensure it exists
-    const baseDir = path.join(process.cwd(), 'data');
-    await ensureDirectoryExists(baseDir);
-    const csvPath = path.join(baseDir, 'waitlist.csv');
-
     // Check if email already exists
-    const emailExists = await checkEmailExists(csvPath, email);
+    const emailExists = await checkEmailExists(email);
     if (emailExists) {
       return NextResponse.json(
         { error: 'This email is already on our waitlist!', type: 'info' },
@@ -133,42 +105,30 @@ export async function POST(request: Request) {
     // Get location data from IP
     const ipLocation = await getLocationFromIP(ip);
 
-    // Escape special characters in CSV
-    const escapedEmail = email.replace(/"/g, '""');
-    
-    // Create CSV line with location data
-    const locationData = ipLocation ? 
-      `"${ipLocation.country}","${ipLocation.region}","${ipLocation.city}"` :
-      '"Unknown","Unknown","Unknown"';
-
-    // Reorder columns: Timestamp, Email, Location info, IP, UserAgent
-    const csvLine = `"${timestamp}","${escapedEmail}",${locationData},"${ip}","${userAgent}"\n`;
-
-    // Create or append to CSV file
+    // Save to Supabase
     try {
-      let fileExists = true;
-      try {
-        await fs.access(csvPath);
-      } catch {
-        fileExists = false;
-      }
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([
+          {
+            email: email.toLowerCase(),
+            timestamp,
+            ip,
+            user_agent: userAgent,
+            country: ipLocation?.country || 'Unknown',
+            region: ipLocation?.region || 'Unknown',
+            city: ipLocation?.city || 'Unknown'
+          }
+        ]);
 
-      if (!fileExists) {
-        // Headers in the same order as the data
-        await fs.writeFile(csvPath, 
-          '"Timestamp","Email","Country","Region","City","IP","Browser"\n'
-        );
-      }
-
-      // Append new entry
-      await fs.appendFile(csvPath, csvLine);
+      if (error) throw error;
 
       return NextResponse.json(
         { message: 'Successfully joined waitlist!', type: 'success' },
         { status: 200 }
       );
     } catch (error) {
-      console.error('Error writing to file:', error);
+      console.error('Error saving to database:', error);
       return NextResponse.json(
         { error: 'Failed to save email to waitlist', type: 'error' },
         { status: 500 }
