@@ -6,6 +6,17 @@ import { supabase } from '@/utils/supabase';
 export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
 
+// Add CORS preflight handler
+export async function OPTIONS() {
+  return NextResponse.json({}, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 // Improved email validation
 function isValidEmail(email: string): boolean {
   // RFC 5322 compliant email regex
@@ -78,6 +89,16 @@ async function checkEmailExists(email: string): Promise<boolean> {
 }
 
 export async function POST(request: Request) {
+  // Add CORS headers to the response
+  const response = await handlePostRequest(request);
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return response;
+}
+
+// Move the main logic to a separate function
+async function handlePostRequest(request: Request) {
   try {
     // Validate content type
     const contentType = request.headers.get('content-type');

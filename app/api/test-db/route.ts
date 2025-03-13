@@ -4,6 +4,16 @@ import { supabase } from '@/utils/supabase';
 export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
 
+export async function OPTIONS() {
+  return NextResponse.json({}, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 export async function GET() {
   try {
     console.log('Testing database connection...');
@@ -16,7 +26,7 @@ export async function GET() {
 
     if (connectionError) {
       console.error('Connection test failed:', connectionError);
-      return NextResponse.json({
+      const response = NextResponse.json({
         status: 'error',
         message: 'Database connection failed',
         error: connectionError.message,
@@ -26,6 +36,9 @@ export async function GET() {
           details: connectionError.details
         }
       }, { status: 500 });
+      
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      return response;
     }
 
     // Test count query
@@ -35,7 +48,7 @@ export async function GET() {
 
     if (countError) {
       console.error('Count query failed:', countError);
-      return NextResponse.json({
+      const response = NextResponse.json({
         status: 'error',
         message: 'Count query failed',
         error: countError.message,
@@ -45,26 +58,34 @@ export async function GET() {
           details: countError.details
         }
       }, { status: 500 });
+      
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      return response;
     }
 
     console.log('Database connection successful');
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: 'success',
       message: 'Database connection successful',
       details: {
         count,
         hasRecords: connectionTest !== null,
-        url: supabase.supabaseUrl,
         timestamp: new Date().toISOString()
       }
     }, { status: 200 });
+    
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    return response;
   } catch (error) {
     console.error('Test endpoint error:', error);
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: 'error',
       message: 'Test endpoint failed',
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
     }, { status: 500 });
+    
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    return response;
   }
 } 
